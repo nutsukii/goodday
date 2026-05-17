@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goodday</title>
+    <title>Goodday Booking</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
         body { font-family: 'Prompt', sans-serif; background-color: #F3F4F6; }
@@ -19,20 +18,17 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* ตกแต่งปฏิทิน */
         .cal-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; cursor: pointer; transition: 0.2s; position: relative; }
         .cal-day:hover { background-color: #fce4ec; }
         .cal-active { background-color: #d81b60 !important; color: white !important; font-weight: bold; box-shadow: 0 4px 10px rgba(216,27,96,0.3); }
         .has-event-dot { width: 4px; height: 4px; background-color: #d81b60; border-radius: 50%; position: absolute; bottom: 4px; }
         .cal-active .has-event-dot { background-color: white; }
 
-        /* Loading overlay */
         #liff-loading { position:fixed; inset:0; background:#fff; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px; }
     </style>
 </head>
 <body class="antialiased text-gray-800">
 
-    <!-- ✅ Loading Overlay ระหว่างรอ LIFF init -->
     <div id="liff-loading">
         <div class="w-14 h-14 bg-pink-100 rounded-full flex items-center justify-center">
             <i class="fa-solid fa-calendar-check text-2xl text-pink-500"></i>
@@ -106,16 +102,17 @@
                 <hr class="border-gray-100">
                 <div class="flex items-center">
                     <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mr-3"><i class="fa-solid fa-map-marker-alt"></i></div>
-                    <div><p class="text-xs text-gray-400 font-medium">พื้นที่/จังหวัด</p><p id="prof-province" class="text-sm font-semibold text-gray-700">-</p></div>
+                    <div><p class="text-xs text-gray-400 font-medium">จังหวัด</p><p id="prof-province" class="text-sm font-semibold text-gray-700">-</p></div>
                 </div>
                 <hr class="border-gray-100">
-                <!-- ✅ เพิ่ม: แสดง LINE UID -->
-                <div class="flex items-center">
-                    <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mr-3"><i class="fa-brands fa-line" style="color:#06C755"></i></div>
-                    <div><p class="text-xs text-gray-400 font-medium">LINE UID</p><p id="prof-lineuid" class="text-xs font-semibold text-gray-500 break-all">-</p></div>
+                <div class="flex items-start">
+                    <div class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 mr-3 mt-1"><i class="fa-solid fa-house-chimney"></i></div>
+                    <div>
+                        <p class="text-xs text-gray-400 font-medium">ที่อยู่</p>
+                        <p id="prof-address" class="text-sm font-semibold text-gray-700 leading-relaxed mt-1">-</p>
+                    </div>
                 </div>
             </div>
-
             <button onclick="doLogout()" class="w-full bg-red-50 text-red-500 py-3.5 rounded-xl font-semibold hover:bg-red-100 transition"><i class="fa-solid fa-arrow-right-from-bracket mr-2"></i> ออกจากระบบ</button>
         </div>
 
@@ -158,38 +155,12 @@
                 <div class="grid grid-cols-2 gap-3">
                     <select id="reg-province" class="w-full border rounded-xl p-3 bg-white focus:outline-none focus:border-pink-500">
                         <option value="">-- จังหวัด * --</option>
-                        <option>กรุงเทพมหานคร</option><option>กระบี่</option><option>กาญจนบุรี</option>
-                        <option>กาฬสินธุ์</option><option>กำแพงเพชร</option><option>ขอนแก่น</option>
-                        <option>จันทบุรี</option><option>ฉะเชิงเทรา</option><option>ชลบุรี</option>
-                        <option>ชัยนาท</option><option>ชัยภูมิ</option><option>ชุมพร</option>
-                        <option>เชียงราย</option><option>เชียงใหม่</option><option>ตรัง</option>
-                        <option>ตราด</option><option>ตาก</option><option>นครนายก</option>
-                        <option>นครปฐม</option><option>นครพนม</option><option>นครราชสีมา</option>
-                        <option>นครศรีธรรมราช</option><option>นครสวรรค์</option><option>นนทบุรี</option>
-                        <option>นราธิวาส</option><option>น่าน</option><option>บึงกาฬ</option>
-                        <option>บุรีรัมย์</option><option>ปทุมธานี</option><option>ประจวบคีรีขันธ์</option>
-                        <option>ปราจีนบุรี</option><option>ปัตตานี</option><option>พระนครศรีอยุธยา</option>
-                        <option>พะเยา</option><option>พังงา</option><option>พัทลุง</option>
-                        <option>พิจิตร</option><option>พิษณุโลก</option><option>เพชรบุรี</option>
-                        <option>เพชรบูรณ์</option><option>แพร่</option><option>ภูเก็ต</option>
-                        <option>มหาสารคาม</option><option>มุกดาหาร</option><option>แม่ฮ่องสอน</option>
-                        <option>ยโสธร</option><option>ยะลา</option><option>ร้อยเอ็ด</option>
-                        <option>ระนอง</option><option>ระยอง</option><option>ราชบุรี</option>
-                        <option>ลพบุรี</option><option>ลำปาง</option><option>ลำพูน</option>
-                        <option>เลย</option><option>ศรีสะเกษ</option><option>สกลนคร</option>
-                        <option>สงขลา</option><option>สตูล</option><option>สมุทรปราการ</option>
-                        <option>สมุทรสงคราม</option><option>สมุทรสาคร</option><option>สระแก้ว</option>
-                        <option>สระบุรี</option><option>สิงห์บุรี</option><option>สุโขทัย</option>
-                        <option>สุพรรณบุรี</option><option>สุราษฎร์ธานี</option><option>สุรินทร์</option>
-                        <option>หนองคาย</option><option>หนองบัวลำภู</option><option>อ่างทอง</option>
-                        <option>อำนาจเจริญ</option><option>อุดรธานี</option><option>อุตรดิตถ์</option>
-                        <option>อุทัยธานี</option><option>อุบลราชธานี</option>
-                    </select>
+                        <option>กรุงเทพมหานคร</option><option>ชลบุรี</option><option>เชียงใหม่</option><option>ปทุมธานี</option>
+                        </select>
                     <input type="text" id="reg-zip" class="w-full border rounded-xl p-3 focus:outline-none focus:border-pink-500" placeholder="รหัสไปรษณีย์ *">
                 </div>
 
                 <div id="reg-error" class="bg-red-50 text-red-500 text-sm p-3 rounded-lg text-center hidden"></div>
-                
                 <button onclick="doRegister(this)" class="w-full theme-pink text-white py-3.5 rounded-xl font-semibold mt-2 shadow-sm">ยืนยันสมัครสมาชิก</button>
                 <button onclick="showPage('login')" class="w-full bg-gray-100 text-gray-600 py-3 rounded-xl font-medium mt-2">มีบัญชีอยู่แล้ว? เข้าสู่ระบบ</button>
             </div>
@@ -230,115 +201,59 @@
             </button>
         </div>
     </div>
-
+    
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script>
-        // ============================================================
-        // 0. ค่าคงที่และตัวแปร Global
-        // ============================================================
-        const LIFF_ID = "2009970638-NL6GN7HE"; // ← ✅ ใส่ LIFF ID ของคุณตรงนี้
 
+        const API_URL = "https://script.google.com/macros/s/AKfycbyi-EUVm3z_ZszpThgGfYuu6Rhvk6XpIL_ex3eL5OhvXizxO8ntlfvOsTYF8fB8dV4M/exec"; 
+        const LIFF_ID_BOOKING = "2009970638-NL6GN7HE";
+        
         let loggedInUser = null;
         let allActivities = [];
         let myBookedActivities = [];
         let currentCatFilter = 'ทั้งหมด';
         let pendingActivity = null;
         let currentDate = new Date();
-        let lineUid = null;        // ✅ เก็บ LINE UID
-        let lineDisplayName = null; // ✅ เก็บชื่อ LINE
+        const monthNames = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+        let currentLineUid = ""; 
 
-        const monthNames = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
-        const START_PAGE_SERVER = "<?= typeof startPage !== 'undefined' ? startPage : '' ?>";
-
-        // ============================================================
-        // 1. ✅ LIFF Init — มี timeout 4 วิ ถ้าช้าเกินให้ข้ามไปเลย
-        // ============================================================
-        function initLiff() {
-            return new Promise(async (resolve) => {
-                // ถ้า LIFF_ID ยังไม่ได้ตั้ง หรือ SDK โหลดไม่ได้ → ข้ามเลย
-                if (!LIFF_ID || LIFF_ID === "YOUR_LIFF_ID_HERE" || typeof liff === "undefined") {
-                    console.warn("⚠️ LIFF_ID ไม่ได้ตั้งค่า หรือ SDK ไม่พร้อม — ข้ามไป");
-                    return resolve();
-                }
-
-                // Timeout 4 วินาที ถ้า LIFF ช้าก็ข้ามไปก่อน
-                const timer = setTimeout(() => {
-                    console.warn("⚠️ LIFF init timeout — ข้ามไปใช้งานแบบไม่มี UID");
-                    resolve();
-                }, 4000);
-
-                try {
-                    await liff.init({ liffId: LIFF_ID });
-                    clearTimeout(timer);
-
-                    // ลอง getProfile ทุกกรณีถ้า login แล้ว
-                    // (ไม่ใช้ isInClient เพราะ LINE WebView บางรุ่น return false ผิดพลาด)
-                    if (liff.isLoggedIn()) {
-                        try {
-                            const profile = await liff.getProfile();
-                            lineUid = profile.userId;
-                            lineDisplayName = profile.displayName;
-                            console.log("✅ LINE UID:", lineUid);
-                        } catch(profileErr) {
-                            console.warn("⚠️ getProfile failed:", profileErr.message);
-                        }
-                    } else if (liff.isInClient()) {
-                        // อยู่ใน LINE แต่ยังไม่ login LIFF → บังคับ login
-                        liff.login();
-                        return;
-                    } else {
-                        console.log("ℹ️ เปิดนอก LINE App");
-                    }
-                } catch (err) {
-                    clearTimeout(timer);
-                    console.warn("⚠️ LIFF init error:", err.message);
-                }
-                resolve();
-            });
+        async function callAPI(action, data = {}) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: action, data: data }),
+                    redirect: "follow" 
+                });
+                return await response.json();
+            } catch (error) {
+                console.error("API Error:", error);
+                return { success: false, message: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้" };
+            }
         }
 
-        // ============================================================
-        // 2. DOMContentLoaded — รอ LIFF ก่อน แล้วค่อยเริ่มแอป
-        // ============================================================
-        document.addEventListener("DOMContentLoaded", async function () {
-            await initLiff();
+        document.addEventListener("DOMContentLoaded", function() {
+            const savedSession = localStorage.getItem('gooddaySession');
+            if(savedSession) loggedInUser = JSON.parse(savedSession);
 
-            // ซ่อน Loading overlay
-            document.getElementById('liff-loading').style.display = 'none';
-
-            // โหลด session จาก localStorage
-            const savedData = localStorage.getItem('gooddaySession');
-            if (savedData) {
-                loggedInUser = JSON.parse(savedData);
-
-                // ✅ ถ้าตอนนี้ได้ lineUid แล้ว แต่ใน session ยังไม่มี → อัปเดตเลย
-                if (lineUid && !loggedInUser.lineUid) {
-                    loggedInUser.lineUid = lineUid;
-                    localStorage.setItem('gooddaySession', JSON.stringify(loggedInUser));
-                    // อัปเดตในชีทด้วย
-                    google.script.run.updateLineUid(loggedInUser.phone, lineUid);
+            liff.init({ liffId: LIFF_ID_BOOKING }).then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(profile => {
+                        currentLineUid = profile.userId; 
+                    }).catch(err => console.error("ดึงโปรไฟล์ไม่ได้: ", err));
                 }
+            }).catch(err => console.error("LIFF Init Error: ", err));
 
-                updateProfileUI();
-            }
-
+            showPage('book');
             fetchActivities();
-
-            // นำทางตาม URL parameter
-            const urlParams = new URLSearchParams(window.location.search);
-            const target = START_PAGE_SERVER || urlParams.get('p') || "";
-            if (target === 'profile') goToProfile();
-            else if (target === 'calendar') showPage('calendar');
-            else if (target === 'history') showPage('history');
-            else showPage('book');
         });
 
-        // ============================================================
-        // 3. ฟังก์ชันนำทาง (Navigation)
-        // ============================================================
         function showPage(pageId) {
             document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
-            const page = document.getElementById('page-' + pageId);
-            if (page) page.classList.add('active');
+            let page = document.getElementById('page-' + pageId);
+            if(!page) { pageId = 'book'; page = document.getElementById('page-book'); }
+
+            page.classList.add('active');
             window.scrollTo(0, 0);
 
             document.querySelectorAll('.nav-btn').forEach(el => {
@@ -346,65 +261,66 @@
                 el.classList.add('text-gray-400');
             });
             const activeNav = document.getElementById('nav-' + pageId);
-            if (activeNav) {
+            if(activeNav) {
                 activeNav.classList.remove('text-gray-400');
                 activeNav.classList.add('theme-text', 'font-medium');
             }
 
-            if (pageId === 'calendar') renderCalendar();
-            if (pageId === 'history') fetchHistory();
-            if (pageId === 'profile') updateProfileUI();
+            if(pageId === 'calendar') renderCalendar();
+            if(pageId === 'history') fetchHistory();
+            if(pageId === 'profile') updateProfileUI();
         }
 
         function goToProfile() {
-            if (loggedInUser) showPage('profile');
+            if(loggedInUser) showPage('profile');
             else showPage('login');
         }
 
         function updateProfileUI() {
-            if (!loggedInUser) return;
+            if(!loggedInUser) return;
             document.getElementById('prof-name').innerText = loggedInUser.name;
             document.getElementById('prof-phone').innerText = loggedInUser.phone;
             document.getElementById('prof-email').innerText = loggedInUser.email || "-";
             document.getElementById('prof-province').innerText = loggedInUser.province || "-";
 
-            // ✅ ดึง lineUid จากตัวแปร LIFF โดยตรงก่อน ถ้าไม่มีค่อยดึงจาก session
-            const displayUid = lineUid || loggedInUser.lineUid || null;
-            document.getElementById('prof-lineuid').innerText = displayUid
-                ? displayUid
-                : "ไม่พบ (เปิดผ่าน LINE เพื่อรับ UID)";
-
-            // sync เข้า session ถ้ายังไม่มี
-            if (lineUid && !loggedInUser.lineUid) {
-                loggedInUser.lineUid = lineUid;
-                localStorage.setItem('gooddaySession', JSON.stringify(loggedInUser));
-                google.script.run.updateLineUid(loggedInUser.phone, lineUid);
+            // โชว์ที่อยู่
+            let addrText = "-";
+            if(loggedInUser.address) {
+                const a = loggedInUser.address;
+                let parts = [];
+                if(a.house) parts.push(`บ้านเลขที่ ${a.house}`);
+                if(a.moo) parts.push(`หมู่ ${a.moo}`);
+                if(a.road) parts.push(`ถนน${a.road}`);
+                if(a.subdist) parts.push(`ต.${a.subdist}`);
+                if(a.dist) parts.push(`อ.${a.dist}`);
+                if(a.prov) parts.push(`จ.${a.prov}`);
+                if(a.zip) parts.push(`${a.zip}`);
+                addrText = parts.join(' ') || "-";
             }
+            document.getElementById('prof-address').innerText = addrText;
         }
 
-        // ============================================================
-        // 4. โหลดและแสดงกิจกรรม
-        // ============================================================
-        function fetchActivities() {
-            google.script.run.withSuccessHandler(data => {
-                allActivities = data;
-                if (loggedInUser) {
-                    google.script.run.withSuccessHandler(history => {
-                        myBookedActivities = history.filter(h => h.status === 'ยืนยันการจอง').map(h => h.activity);
-                        renderActivityList();
-                        renderCalendar();
-                    }).getUserBookings(loggedInUser.phone);
-                } else {
-                    myBookedActivities = [];
-                    renderActivityList();
-                    renderCalendar();
-                }
-            }).getActivities();
+        async function fetchActivities() {
+            let res = await callAPI("getActivities");
+            allActivities = Array.isArray(res) ? res : [];
+            
+            if(loggedInUser) {
+                const history = await callAPI("getUserBookings", { phone: loggedInUser.phone });
+                myBookedActivities = Array.isArray(history) ? history.filter(h => h.status === 'ยืนยันการจอง').map(h => h.activity) : [];
+            } else {
+                myBookedActivities = [];
+            }
+            
+            renderActivityList();
+            renderCalendar();
+
+            // ปิดหน้าจอโหลดดิ้ง
+            const loader = document.getElementById('liff-loading');
+            if(loader) loader.style.display = 'none';
         }
 
         function renderActivityList() {
             let list = allActivities;
-
             if (loggedInUser && loggedInUser.province) {
                 list = list.filter(a => a.province === loggedInUser.province || a.province === "" || a.province === "ทั้งหมด");
             }
@@ -414,12 +330,12 @@
 
             let html = list.map(a => {
                 let isBooked = myBookedActivities.includes(a.name);
-                let badgeHtml = a.remaining > 0
-                    ? `<span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded font-bold">ว่าง ${a.remaining} ที่</span>`
+                let badgeHtml = a.remaining > 0 
+                    ? `<span class="bg-green-100 text-green-700 text-[10px] px-2 py-1 rounded font-bold">ว่าง ${a.remaining} ที่</span>` 
                     : `<span class="bg-red-100 text-red-600 text-[10px] px-2 py-1 rounded font-bold">เต็มแล้ว</span>`;
-
+                
                 let btnHtml = '';
-                if (isBooked) {
+                if(isBooked) {
                     btnHtml = `<button disabled class="w-full bg-green-50 text-green-600 py-2.5 rounded-lg font-bold border border-green-200 cursor-not-allowed shadow-sm">✅ จองเรียบร้อย</button>`;
                 } else if (a.remaining > 0) {
                     btnHtml = `<button onclick="handleBookClick('${a.name}')" class="w-full theme-pink text-white py-2.5 rounded-lg font-medium shadow-sm hover:bg-pink-700 transition">จองทันที</button>`;
@@ -427,9 +343,7 @@
                     btnHtml = `<button disabled class="w-full bg-gray-200 text-gray-400 py-2.5 rounded-lg font-medium cursor-not-allowed">เต็มแล้ว</button>`;
                 }
 
-                let detailsHtml = a.details
-                    ? `<p class="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg leading-relaxed"><i class="fa-solid fa-circle-info w-4 text-center"></i> ${a.details}</p>`
-                    : '';
+                let detailsHtml = a.details ? `<p class="text-xs text-gray-500 mt-2 bg-gray-50 p-2 rounded-lg leading-relaxed"><i class="fa-solid fa-circle-info w-4 text-center"></i> ${a.details}</p>` : '';
 
                 return `
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -448,7 +362,6 @@
                     </div>
                 </div>`;
             }).join('');
-
             document.getElementById('activity-list').innerHTML = html || '<div class="text-center py-10 text-gray-400">ไม่พบกิจกรรมในหมวดหมู่ที่เลือก</div>';
         }
 
@@ -461,29 +374,23 @@
             renderActivityList();
         }
 
-        // ============================================================
-        // 5. ปฏิทิน
-        // ============================================================
         function renderCalendar() {
             const m = currentDate.getMonth(); const y = currentDate.getFullYear();
             document.getElementById('cal-month-year').innerText = `${monthNames[m]} ${y}`;
             const first = new Date(y, m, 1).getDay();
             const days = new Date(y, m + 1, 0).getDate();
-
             let grid = '';
-            for (let i = 0; i < first; i++) grid += '<div></div>';
-
+            for(let i=0; i<first; i++) grid += '<div></div>';
+            
             const today = new Date();
-            for (let day = 1; day <= days; day++) {
-                const dStr = `${y}-${String(m + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+            for(let day=1; day<=days; day++){
+                const dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
                 let dayActivities = allActivities.filter(a => a.calDate === dStr);
                 if (loggedInUser && loggedInUser.province) {
-                    dayActivities = dayActivities.filter(a =>
-                        a.province === loggedInUser.province || a.province === "" || a.province === "ทั้งหมด"
-                    );
+                    dayActivities = dayActivities.filter(a => a.province === loggedInUser.province || a.province === "" || a.province === "ทั้งหมด");
                 }
                 let dot = '';
-                if (dayActivities.length > 0) {
+                if(dayActivities.length > 0){
                     const isMine = dayActivities.some(a => myBookedActivities.includes(a.name));
                     dot = `<div class="w-1.5 h-1.5 ${isMine ? 'bg-green-500' : 'bg-pink-500'} rounded-full absolute bottom-1"></div>`;
                 }
@@ -493,71 +400,57 @@
             document.getElementById('calendar-grid').innerHTML = grid;
         }
 
-        function changeMonth(step) { currentDate.setMonth(currentDate.getMonth() + step); renderCalendar(); }
-
+        function changeMonth(step) { currentDate.setMonth(currentDate.getMonth()+step); renderCalendar(); }
+        
         function selectDate(dStr, d, m) {
             document.getElementById('selected-date-text').innerText = `กิจกรรมวันที่ ${d} ${monthNames[m]}`;
             let acts = allActivities.filter(a => a.calDate === dStr);
             if (loggedInUser && loggedInUser.province) {
-                acts = acts.filter(a =>
-                    a.province === loggedInUser.province || a.province === "" || a.province === "ทั้งหมด"
-                );
+                acts = acts.filter(a => a.province === loggedInUser.province || a.province === "" || a.province === "ทั้งหมด");
             }
-            let html = acts.length === 0
-                ? '<p class="text-xs text-gray-400 py-4 text-center w-full">ไม่มีกิจกรรมสำหรับพื้นที่ของคุณในวันนี้</p>'
-                : acts.map(a => {
-                    let isBooked = myBookedActivities.includes(a.name);
-                    let btnHtml = '';
-                    if (isBooked) {
-                        btnHtml = `<button disabled class="bg-green-100 text-green-700 px-3 py-1.5 rounded-md text-xs font-bold border border-green-200">✅ จองแล้ว</button>`;
-                    } else if (a.remaining > 0) {
-                        btnHtml = `<button onclick="handleBookClick('${a.name}')" class="theme-pink text-white px-3 py-1.5 rounded-md text-xs shadow-sm hover:bg-pink-700 transition">จองทันที</button>`;
-                    } else {
-                        btnHtml = `<button disabled class="bg-red-100 text-red-500 px-3 py-1.5 rounded-md text-xs font-bold">เต็มแล้ว</button>`;
-                    }
-                    return `
-                    <div class="bg-white p-3 rounded-xl flex justify-between items-center text-sm mb-3 border border-pink-100 shadow-sm">
-                        <div class="flex flex-col pr-2">
-                            <span class="font-bold text-gray-800">${a.name}</span>
-                            <span class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-clock"></i> ${a.datetime}</span>
-                        </div>
-                        <div>${btnHtml}</div>
-                    </div>`;
-                }).join('');
+            let html = acts.length === 0 ? '<p class="text-xs text-gray-400 py-4 text-center w-full">ไม่มีกิจกรรมสำหรับพื้นที่ของคุณในวันนี้</p>' : acts.map(a => {
+                let isBooked = myBookedActivities.includes(a.name);
+                let btnHtml = '';
+                if (isBooked) {
+                    btnHtml = `<button disabled class="bg-green-100 text-green-700 px-3 py-1.5 rounded-md text-xs font-bold border border-green-200">✅ จองแล้ว</button>`;
+                } else if (a.remaining > 0) {
+                    btnHtml = `<button onclick="handleBookClick('${a.name}')" class="theme-pink text-white px-3 py-1.5 rounded-md text-xs shadow-sm hover:bg-pink-700 transition">จองทันที</button>`;
+                } else {
+                    btnHtml = `<button disabled class="bg-red-100 text-red-500 px-3 py-1.5 rounded-md text-xs font-bold">เต็มแล้ว</button>`;
+                }
+                return `
+                <div class="bg-white p-3 rounded-xl flex justify-between items-center text-sm mb-3 border border-pink-100 shadow-sm">
+                    <div class="flex flex-col pr-2">
+                        <span class="font-bold text-gray-800">${a.name}</span>
+                        <span class="text-[10px] text-gray-500 mt-1"><i class="fa-regular fa-clock"></i> ${a.datetime}</span>
+                    </div>
+                    <div>${btnHtml}</div>
+                </div>`;
+            }).join('');
             document.getElementById('selected-date-activities').innerHTML = html;
         }
 
-        // ============================================================
-        // 6. Auth — Login / Register / Logout
-        // ============================================================
-        function doLogin(btn) {
+        async function doLogin(btn) {
             const id = document.getElementById('login-id').value;
             const pass = document.getElementById('login-pass').value;
             const err = document.getElementById('login-error');
-            if (!id || !pass) { err.innerText = "กรุณากรอกข้อมูลให้ครบ"; err.classList.remove('hidden'); return; }
+            if(!id || !pass) { err.innerText = "กรุณากรอกข้อมูลให้ครบ"; err.classList.remove('hidden'); return; }
+            
             btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-            google.script.run.withSuccessHandler(res => {
-                btn.disabled = false; btn.innerText = "เข้าสู่ระบบ";
-                if (res.success) {
-                    loggedInUser = res.user;
-
-                    // ✅ แนบ LINE UID เข้า session ถ้ามี
-                    if (lineUid) {
-                        loggedInUser.lineUid = lineUid;
-                        google.script.run.updateLineUid(loggedInUser.phone, lineUid);
-                    }
-
-                    localStorage.setItem('gooddaySession', JSON.stringify(loggedInUser));
-                    fetchActivities();
-                    pendingActivity ? showPage('confirm') : showPage('book');
-                } else {
-                    err.innerText = res.message;
-                    err.classList.remove('hidden');
-                }
-            }).loginUser(id, pass);
+            const res = await callAPI("loginUser", { id: id, pass: pass });
+            btn.disabled = false; btn.innerText = "เข้าสู่ระบบ";
+            if(res.success) {
+                loggedInUser = res.user;
+                localStorage.setItem('gooddaySession', JSON.stringify(loggedInUser));
+                fetchActivities();
+                pendingActivity ? showPage('confirm') : showPage('book');
+            } else { err.innerText = res.message; err.classList.remove('hidden'); }
         }
 
-        function doRegister(btn) {
+        async function doRegister(btn) {
+            const err = document.getElementById('reg-error');
+            err.classList.add('hidden');
+
             const data = {
                 name: document.getElementById('reg-name').value.trim(),
                 phone: document.getElementById('reg-phone').value.trim(),
@@ -570,49 +463,38 @@
                 district: document.getElementById('reg-dist').value.trim(),
                 province: document.getElementById('reg-province').value,
                 zipCode: document.getElementById('reg-zip').value.trim(),
-                // ✅ ส่ง lineUid ที่ได้จาก LIFF SDK จริงๆ
-                lineUid: lineUid
+                lineUid: currentLineUid 
             };
 
-            const err = document.getElementById('reg-error');
-            if (!data.name || !data.phone || !data.password || !data.houseNo || !data.subDistrict || !data.district || !data.province || !data.zipCode) {
-                err.innerText = "กรุณากรอกข้อมูลที่มี * ให้ครบถ้วน เพื่อความถูกต้องในการจัดส่งสินค้าครับ";
-                err.classList.remove('hidden');
-                return;
+            if(!data.name || !data.phone || !data.password || !data.houseNo || !data.subDistrict || !data.district || !data.province || !data.zipCode) { 
+                err.innerText = "กรุณากรอกข้อมูลที่มี * ให้ครบถ้วนครับ"; err.classList.remove('hidden'); return; 
             }
 
-            const oriText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังสร้างบัญชี...';
+            const oriText = btn.innerHTML; 
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังสร้างบัญชี...'; 
             btn.disabled = true;
+            
 
-            google.script.run.withSuccessHandler(res => {
-                btn.innerHTML = oriText; btn.disabled = false;
-                if (res.success) {
-                    err.classList.add('hidden');
-                    loggedInUser = res.user;
-                    if (lineUid) loggedInUser.lineUid = lineUid;
-                    localStorage.setItem('gooddaySession', JSON.stringify(loggedInUser));
-                    fetchActivities();
-                    showPage('profile');
-                } else {
-                    err.innerText = res.message;
-                    err.classList.remove('hidden');
-                }
-            }).registerUser(data);
+            const res = await callAPI("registerUser", data);
+            btn.innerHTML = oriText; btn.disabled = false;
+            if(res.success) {
+                alert("สมัครสมาชิกสำเร็จ!");
+                localStorage.setItem('gooddaySession', JSON.stringify(res.user)); 
+                loggedInUser = res.user;
+                fetchActivities(); 
+                showPage('profile'); 
+            } else { err.innerText = res.message; err.classList.remove('hidden'); }
         }
 
         function doLogout() {
-            localStorage.removeItem('gooddaySession');
+            localStorage.removeItem('gooddaySession'); 
             loggedInUser = null;
-            showPage('book');
+            fetchActivities(); showPage('book');
         }
 
-        // ============================================================
-        // 7. การจอง
-        // ============================================================
         function handleBookClick(name) {
-            pendingActivity = name;
-            if (!loggedInUser) showPage('login');
+            pendingActivity = name; 
+            if(!loggedInUser) { showPage('login'); } 
             else {
                 document.getElementById('confirm-act-name').innerText = name;
                 document.getElementById('confirm-user-name').innerText = loggedInUser.name;
@@ -620,57 +502,49 @@
             }
         }
 
-        function submitBooking(btn) {
+        async function submitBooking(btn) {
             btn.disabled = true; btn.innerHTML = "กำลังจอง...";
-            google.script.run.withSuccessHandler(res => {
-                btn.disabled = false; btn.innerText = "✅ ยืนยันการจอง";
-                if (res.success) {
-                    document.getElementById('show-booking-id').innerText = res.bookingId;
-                    fetchActivities(); showPage('success');
-                } else { alert(res.message); }
-            }).saveBooking({ user: loggedInUser, activity: pendingActivity });
+            const res = await callAPI("saveBooking", { user: loggedInUser, activity: pendingActivity });
+            btn.disabled = false; btn.innerText = "✅ ยืนยันการจอง";
+            if(res.success) {
+                document.getElementById('show-booking-id').innerText = res.bookingId;
+                fetchActivities(); showPage('success');
+            } else { alert(res.message); }
         }
 
-        // ============================================================
-        // 8. ประวัติ
-        // ============================================================
-        function fetchHistory() {
-            if (!loggedInUser) {
+        async function fetchHistory() {
+            if(!loggedInUser) {
                 document.getElementById('history-list').innerHTML = `
                     <div class="text-center py-12">
                         <div class="text-4xl mb-4 text-gray-300"><i class="fa-solid fa-lock"></i></div>
-                        <p class="text-gray-500 mb-4 text-sm font-medium">กรุณาเข้าสู่ระบบเพื่อดูประวัติการจอง</p>
+                        <p class="text-gray-500 mb-4 text-sm font-medium">กรุณาเข้าสู่ระบบเพื่อดูประวัติ</p>
                         <button onclick="showPage('login')" class="bg-pink-50 text-pink-600 px-6 py-2.5 rounded-xl font-bold text-sm border border-pink-100 shadow-sm hover:bg-pink-100 transition">ไปหน้าเข้าสู่ระบบ</button>
                     </div>`;
                 return;
             }
             document.getElementById('history-list').innerHTML = '<div class="text-center text-gray-500 mt-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-2 theme-text"></i><br>กำลังโหลดประวัติ...</div>';
-            google.script.run.withSuccessHandler(data => {
-                let html = data.length === 0
-                    ? '<p class="text-center py-10 text-gray-400">ไม่พบประวัติการจอง</p>'
-                    : data.map(b => {
-                        const ok = (b.status === "ยืนยันการจอง");
-                        return `
-                        <div class="bg-white border rounded-xl p-4 shadow-sm relative mb-4">
-                            <div class="flex justify-between items-start mb-2">
-                                <h3 class="font-bold text-sm text-gray-800">${b.activity}</h3>
-                                <span class="text-[10px] px-2 py-1 rounded font-bold ${ok ? 'text-green-600 bg-green-50' : 'text-red-500 bg-red-50'}">${b.status}</span>
-                            </div>
-                            <p class="text-[10px] text-gray-400">รหัส: ${b.id} | ${b.date}</p>
-                            ${ok ? `<div class="flex justify-center my-4"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${b.id}" class="border rounded-lg shadow-sm"></div>` : ''}
-                            ${ok ? `<div class="flex justify-end"><button onclick="cancelIt('${b.id}')" class="text-red-500 text-[11px] border border-red-100 px-3 py-1 rounded-full hover:bg-red-50 transition"><i class="fa-solid fa-ban mr-1"></i> ยกเลิกจอง</button></div>` : ''}
-                        </div>`;
-                    }).join('');
-                document.getElementById('history-list').innerHTML = html;
-            }).getUserBookings(loggedInUser.phone);
+            const data = await callAPI("getUserBookings", { phone: loggedInUser.phone });
+            let html = (!data || data.length === 0) ? '<p class="text-center py-10 text-gray-400">ไม่พบประวัติการจอง</p>' : data.map(b => {
+                const ok = (b.status === "ยืนยันการจอง");
+                return `
+                <div class="bg-white border rounded-xl p-4 shadow-sm relative mb-4">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold text-sm text-gray-800">${b.activity}</h3>
+                        <span class="text-[10px] px-2 py-1 rounded font-bold ${ok?'text-green-600 bg-green-50':'text-red-500 bg-red-50'}">${b.status}</span>
+                    </div>
+                    <p class="text-[10px] text-gray-400">รหัส: ${b.id} | ${b.date}</p>
+                    ${ok ? `<div class="flex justify-center my-4"><img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${b.id}" class="border rounded-lg shadow-sm"></div>` : ''}
+                    ${ok ? `<div class="flex justify-end"><button onclick="cancelIt('${b.id}')" class="text-red-500 text-[11px] border border-red-100 px-3 py-1 rounded-full hover:bg-red-50 transition"><i class="fa-solid fa-ban mr-1"></i> ยกเลิกจอง</button></div>` : ''}
+                </div>`;
+            }).join('');
+            document.getElementById('history-list').innerHTML = html;
         }
 
-        function cancelIt(id) {
-            if (!confirm("ยืนยันยกเลิก?")) return;
-            google.script.run.withSuccessHandler(res => {
-                if (res.success) { fetchActivities(); fetchHistory(); }
-                else alert(res.message);
-            }).cancelBooking(id, loggedInUser.phone);
+        async function cancelIt(id) {
+            if(!confirm("ยืนยันยกเลิกรายการนี้?")) return;
+            const res = await callAPI("cancelBooking", { id: id, phone: loggedInUser.phone });
+            if(res.success) { fetchActivities(); fetchHistory(); }
+            else alert(res.message);
         }
     </script>
 </body>
