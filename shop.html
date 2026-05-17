@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goodday Shop</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap');
+        body { font-family: 'Prompt', sans-serif; background-color: #F3F4F6; }
+        .theme-pink { background-color: #d81b60; }
+        .theme-text { color: #d81b60; }
+        .page-section { display: none; }
+        .page-section.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body class="antialiased text-gray-800">
+
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg relative pb-20">
+
+        <div class="theme-pink text-white p-4 sticky top-0 z-50 shadow-md flex justify-between items-center">
+            <h1 class="text-lg font-semibold tracking-wide"><i class="fa-solid fa-store mr-2"></i>Goodday Shop</h1>
+            <div id="login-status" class="text-xs opacity-75"><i class="fa-solid fa-spinner fa-spin"></i> กำลังตรวจสอบ...</div>
+        </div>
+
+        <div id="page-shop" class="page-section active p-4">
+            <div id="product-list" class="grid grid-cols-2 gap-3 mt-4">
+                <div class="text-center py-10 col-span-2">กำลังโหลดสินค้า...</div>
+            </div>
+        </div>
+
+        <div id="page-orders" class="page-section bg-gray-50 pb-20">
+            <div class="flex overflow-x-auto bg-white border-b sticky top-[60px] z-40 no-scrollbar text-sm font-medium text-gray-500">
+                <button onclick="filterOrder('ที่ต้องชำระ', this)" class="order-tab active border-b-2 border-pink-600 theme-text px-4 py-3 whitespace-nowrap">ที่ต้องชำระ</button>
+                <button onclick="filterOrder('เตรียมจัดส่ง', this)" class="order-tab px-4 py-3 whitespace-nowrap">เตรียมจัดส่ง</button>
+                <button onclick="filterOrder('จัดส่งแล้ว', this)" class="order-tab px-4 py-3 whitespace-nowrap">จัดส่งแล้ว</button>
+                <button onclick="filterOrder('จัดส่งเสร็จสิ้น', this)" class="order-tab px-4 py-3 whitespace-nowrap">สำเร็จ</button>
+            </div>
+            <div id="order-list" class="p-4 space-y-4"></div>
+        </div>
+
+        <div id="page-checkout" class="page-section p-4 pt-8 pb-24">
+            <div class="flex items-center mb-4">
+                <button onclick="showPage('shop')" class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center text-gray-600 mr-3"><i class="fa-solid fa-arrow-left"></i></button>
+                <h2 class="text-xl font-bold text-gray-800">สรุปคำสั่งซื้อ</h2>
+            </div>
+            <div class="bg-white border rounded-xl p-4 shadow-sm mb-4 flex items-center gap-4">
+                <img id="co-img" src="" class="w-20 h-20 object-cover rounded-lg border">
+                <div>
+                    <h3 id="co-name" class="font-bold text-gray-800 text-sm"></h3>
+                    <p id="co-price" class="text-gray-500 text-sm mt-1"></p>
+                </div>
+            </div>
+            <div class="bg-white border rounded-xl p-4 shadow-sm mb-4">
+                <p class="text-sm font-bold text-gray-800 mb-3"><i class="fa-solid fa-truck-fast theme-text mr-2"></i>รูปแบบการจัดส่ง</p>
+                <select id="co-delivery" onchange="updateTotal()" class="w-full border rounded-lg p-3 bg-gray-50 text-sm focus:outline-none focus:border-pink-500 font-medium">
+                    <option value="รับหน้างาน">รับหน้างาน (ฟรีค่าส่ง)</option>
+                    <option value="รับที่บ้าน">รับที่บ้าน (+50 บาท)</option>
+                </select>
+                <div id="co-address-box" class="mt-4 p-3 bg-pink-50 border border-pink-100 rounded-lg hidden">
+                    <p class="text-xs font-bold text-pink-600 mb-1"><i class="fa-solid fa-location-dot mr-1"></i> ที่อยู่จัดส่ง:</p>
+                    <p id="co-address-text" class="text-xs text-gray-600 leading-relaxed"></p>
+                </div>
+            </div>
+            <div class="bg-white border rounded-xl p-4 shadow-sm mb-6 space-y-2 text-sm">
+                <div class="flex justify-between text-gray-500"><span>ค่าสินค้า</span><span id="co-subtotal"></span></div>
+                <div class="flex justify-between text-gray-500"><span>ค่าจัดส่ง</span><span id="co-shipping-fee"></span></div>
+                <hr class="border-dashed my-2">
+                <div class="flex justify-between font-bold text-lg"><span class="text-gray-800">ยอดชำระสุทธิ</span><span id="co-total-price" class="theme-text"></span></div>
+            </div>
+            <button onclick="submitOrder(this)" class="w-full theme-pink text-white py-3.5 rounded-xl font-bold shadow-md hover:bg-pink-700 transition">ยืนยันคำสั่งซื้อ</button>
+        </div>
+
+        <div class="fixed bottom-0 w-full max-w-md bg-white border-t flex justify-around py-2.5 text-[11px] text-gray-400 z-50 shadow-[0_-4px_15px_rgba(0,0,0,0.03)]">
+            <button onclick="showPage('shop')" id="nav-shop" class="nav-btn flex flex-col items-center theme-text font-medium w-1/2">
+                <i class="fa-solid fa-store text-xl mb-1.5"></i> ร้านค้า
+            </button>
+            <button onclick="showPage('orders')" id="nav-orders" class="nav-btn flex flex-col items-center w-1/2">
+                <i class="fa-solid fa-clipboard-list text-xl mb-1.5"></i> คำสั่งซื้อ
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbyi-EUVm3z_ZszpThgGfYuu6Rhvk6XpIL_ex3eL5OhvXizxO8ntlfvOsTYF8fB8dV4M/exec";
+        const LIFF_ID_SHOP = "2009970638-OZX0UstV";
+
+        let currentUser = null;
+        let allProducts = [];
+        let myOrders = [];
+        let currentTab = 'ที่ต้องชำระ';
+        let selectedProduct = null;
+        let isCheckingLogin = true;
+
+        async function callAPI(action, data = {}) {
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    // ✅ แก้แล้ว: text/plain (slash ไม่ใช่ขีด)
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: action, data: data }),
+                    redirect: "follow"
+                });
+                return await response.json();
+            } catch (error) {
+                console.error("API Error:", error);
+                return { success: false, message: "เชื่อมต่อเซิร์ฟเวอร์ฐานข้อมูลไม่ได้ กรุณาเช็กลิงก์ API" };
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchProducts();
+
+            // ✅ Step 1: โหลด session จาก Booking ก่อนเลย (ทำให้ใช้งานได้ทันทีโดยไม่ต้องรอ LIFF)
+            const saved = localStorage.getItem('gooddaySession');
+            if (saved) {
+                try {
+                    currentUser = JSON.parse(saved);
+                    isCheckingLogin = false;
+                    document.getElementById('login-status').innerHTML =
+                        `<i class="fa-solid fa-circle-check text-green-400"></i> ${currentUser.name}`;
+                    fetchOrders();
+                } catch(e) {
+                    localStorage.removeItem('gooddaySession');
+                }
+            }
+
+            // ✅ Step 2: LIFF init เพื่อ sync ข้อมูลล่าสุดจาก LINE UID (ถ้า session หมดหรือยังไม่มี)
+            liff.init({ liffId: LIFF_ID_SHOP }).then(() => {
+                if (liff.isLoggedIn()) {
+                    liff.getProfile().then(async profile => {
+                        const res = await callAPI("autoLoginByUid", { uid: profile.userId });
+                        isCheckingLogin = false;
+
+                        if (res && res.success === false) {
+                            // มี error จริงๆ (ไม่ใช่แค่หาไม่เจอ)
+                            if (!currentUser) {
+                                document.getElementById('login-status').innerHTML =
+                                    `<i class="fa-solid fa-triangle-exclamation text-red-400"></i> Error`;
+                                alert("ปัญหาการเข้าสู่ระบบ: " + res.message);
+                            }
+                        } else if (res && res.name) {
+                            // ✅ พบข้อมูลจาก LINE UID — อัปเดต session ล่าสุดเสมอ
+                            currentUser = res;
+                            localStorage.setItem('gooddaySession', JSON.stringify(currentUser));
+                            document.getElementById('login-status').innerHTML =
+                                `<i class="fa-solid fa-circle-check text-green-400"></i> ${res.name}`;
+                            fetchOrders();
+                        } else {
+                            // ไม่พบ UID ในระบบ (ยังไม่ได้สมัครสมาชิก)
+                            if (!currentUser) {
+                                isCheckingLogin = false;
+                                document.getElementById('login-status').innerHTML =
+                                    `<i class="fa-solid fa-triangle-exclamation text-yellow-400"></i> บัญชีทั่วไป`;
+                            }
+                        }
+                    }).catch(err => {
+                        console.error("getProfile Error:", err);
+                        isCheckingLogin = false;
+                        if (!currentUser) {
+                            document.getElementById('login-status').innerHTML = "⚠️ ดึงโปรไฟล์ไม่ได้";
+                        }
+                    });
+                } else {
+                    liff.login();
+                }
+            }).catch(err => {
+                console.error("LIFF Error", err);
+                isCheckingLogin = false;
+                // ถ้า LIFF พัง แต่มี session อยู่ → ยังใช้งานได้ปกติ
+                if (!currentUser) {
+                    document.getElementById('login-status').innerHTML = "⚠️ LINE Error";
+                }
+            });
+        });
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            window.scrollTo(0, 0);
+
+            document.querySelectorAll('.nav-btn').forEach(el => {
+                el.classList.remove('theme-text', 'font-medium');
+                el.classList.add('text-gray-400');
+            });
+            if (document.getElementById('nav-' + pageId)) {
+                document.getElementById('nav-' + pageId).classList.remove('text-gray-400');
+                document.getElementById('nav-' + pageId).classList.add('theme-text', 'font-medium');
+            }
+            if (pageId === 'orders') fetchOrders();
+        }
+
+        async function fetchProducts() {
+            const res = await callAPI("getProducts");
+            if (Array.isArray(res)) {
+                allProducts = res;
+                let html = res.map(p => `
+                <div class="bg-white border rounded-xl shadow-sm overflow-hidden flex flex-col justify-between">
+                    <img src="${p.image || 'https://via.placeholder.com/150'}" class="w-full h-32 object-cover">
+                    <div class="p-3">
+                        <h3 class="text-sm font-semibold text-gray-800 leading-tight mb-1">${p.name}</h3>
+                        <p class="text-sm font-bold theme-text mb-3">฿${p.price}</p>
+                        <button onclick="buyNow('${p.id}')" class="w-full theme-pink text-white py-1.5 rounded-lg text-xs font-medium shadow-sm hover:bg-pink-700">สั่งซื้อ</button>
+                    </div>
+                </div>`).join('');
+                document.getElementById('product-list').innerHTML = html || '<div class="text-center col-span-2 py-10 text-gray-400">ยังไม่มีสินค้า</div>';
+            } else {
+                document.getElementById('product-list').innerHTML =
+                    `<div class="text-center col-span-2 py-10 text-red-500">ระบบขัดข้อง ไม่สามารถโหลดสินค้าได้<br>(${res.message || "เช็กลิงก์ API"})</div>`;
+            }
+        }
+
+        function buyNow(id) {
+            if (isCheckingLogin) { alert("รอสักครู่ ระบบกำลังโหลดข้อมูลสมาชิก..."); return; }
+            if (!currentUser) { alert("กรุณาไปที่ 'ระบบจอง' เพื่อทำการสมัครสมาชิกก่อนสั่งซื้อสินค้าครับ"); return; }
+
+            selectedProduct = allProducts.find(p => p.id === id);
+
+            document.getElementById('co-img').src = selectedProduct.image || 'https://via.placeholder.com/150';
+            document.getElementById('co-name').innerText = selectedProduct.name;
+            document.getElementById('co-price').innerText = '฿' + selectedProduct.price;
+            document.getElementById('co-subtotal').innerText = '฿' + selectedProduct.price;
+
+            document.getElementById('co-delivery').value = 'รับหน้างาน';
+            updateTotal();
+            showPage('checkout');
+        }
+
+        function updateTotal() {
+            const delType = document.getElementById('co-delivery').value;
+            let total = parseInt(selectedProduct.price);
+            let shippingFee = 0;
+
+            if (delType === 'รับที่บ้าน') {
+                shippingFee = 50;
+                total += shippingFee;
+                document.getElementById('co-address-box').style.display = 'block';
+
+                const adr = currentUser.address;
+                const fullAdr = `${adr.house} ม.${adr.moo} ถ.${adr.road} ต.${adr.subdist} อ.${adr.dist} จ.${adr.prov} ${adr.zip}`;
+                document.getElementById('co-address-text').innerText =
+                    (adr.house && adr.prov) ? fullAdr : "⚠️ ข้อมูลที่อยู่ไม่ครบถ้วน กรุณาอัปเดตที่ระบบจอง";
+            } else {
+                document.getElementById('co-address-box').style.display = 'none';
+            }
+
+            document.getElementById('co-shipping-fee').innerText = '฿' + shippingFee;
+            document.getElementById('co-total-price').innerText = '฿' + total;
+        }
+
+        async function submitOrder(btn) {
+            const delType = document.getElementById('co-delivery').value;
+            if (delType === 'รับที่บ้าน' && (!currentUser.address.house || !currentUser.address.prov)) {
+                alert("ข้อมูลที่อยู่สมาชิกไม่สมบูรณ์ครับ"); return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังสั่งซื้อ...';
+
+            const orderData = {
+                phone: currentUser.phone,
+                productName: selectedProduct.name,
+                price: selectedProduct.price,
+                deliveryType: delType,
+                address: currentUser.address
+            };
+
+            const res = await callAPI("placeOrder", orderData);
+
+            btn.disabled = false;
+            btn.innerText = 'ยืนยันคำสั่งซื้อ';
+            if (res.success) {
+                alert("สั่งซื้อสำเร็จ! โปรดแนบสลิปโอนเงินด้วยครับ");
+                fetchOrders();
+                showPage('orders');
+            } else {
+                alert("ข้อผิดพลาดระบบ: " + res.message);
+            }
+        }
+
+        async function fetchOrders() {
+            if (!currentUser) return;
+            document.getElementById('order-list').innerHTML =
+                '<div class="text-center py-10"><i class="fa-solid fa-spinner fa-spin theme-text text-2xl"></i></div>';
+
+            const res = await callAPI("getMyOrders", { phone: currentUser.phone });
+            if (Array.isArray(res)) {
+                myOrders = res;
+                renderOrders();
+            } else {
+                document.getElementById('order-list').innerHTML =
+                    `<div class="text-center py-10 text-red-500">ดึงข้อมูลไม่ได้</div>`;
+            }
+        }
+
+        function filterOrder(status, btnElement) {
+            currentTab = status;
+            document.querySelectorAll('.order-tab').forEach(b =>
+                b.classList.remove('border-b-2', 'border-pink-600', 'theme-text'));
+            btnElement.classList.add('border-b-2', 'border-pink-600', 'theme-text');
+            renderOrders();
+        }
+
+        function renderOrders() {
+            let filtered = myOrders.filter(o =>
+                o.status === currentTab ||
+                (currentTab === 'ที่ต้องชำระ' && o.status === 'รอตรวจสอบสลิป')
+            );
+            let html = filtered.map(o => {
+                let actionBtn = '';
+                if (o.status === 'ที่ต้องชำระ') {
+                    actionBtn = `
+                    <div class="mt-3 bg-gray-50 p-3 rounded-lg border border-dashed border-gray-300">
+                        <p class="text-[11px] text-gray-500 mb-2">กสิกรไทย: 012-3-45678-9 (ชื่อบัญชี)</p>
+                        <input type="file" id="slip-${o.id}" accept="image/*" class="text-xs w-full mb-2 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-pink-50 file:text-pink-600">
+                        <button onclick="submitSlip('${o.id}')" class="w-full theme-pink text-white py-2 rounded-lg text-sm font-bold shadow-sm">ส่งหลักฐานการโอนเงิน</button>
+                    </div>`;
+                } else if (o.status === 'รอตรวจสอบสลิป') {
+                    actionBtn = `<div class="mt-3 text-center text-[11px] text-orange-500 bg-orange-50 py-2 rounded-lg font-bold">รอตรวจสอบสลิป</div>`;
+                }
+                return `
+                <div class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm mb-3">
+                    <div class="flex justify-between items-center border-b pb-2 mb-3">
+                        <span class="text-xs font-bold text-gray-800"><i class="fa-solid fa-store theme-text mr-1"></i> Goodday Shop</span>
+                        <span class="text-[11px] font-bold theme-text">${o.status}</span>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-sm text-gray-800">${o.items}</h3>
+                        <p class="text-[10px] text-gray-500 mt-1">ออเดอร์: ${o.id}</p>
+                        <p class="text-[10px] text-gray-500 mt-0.5">จัดส่ง: ${o.delivery}</p>
+                    </div>
+                    <div class="text-right mt-2"><span class="text-base font-bold theme-text">฿${o.total}</span></div>
+                    ${actionBtn}
+                </div>`;
+            }).join('');
+            document.getElementById('order-list').innerHTML =
+                html || '<div class="text-center py-12 text-gray-400">ยังไม่มีคำสั่งซื้อ</div>';
+        }
+
+        function submitSlip(orderId) {
+            const fileInput = document.getElementById(`slip-${orderId}`);
+            const file = fileInput.files[0];
+            if (!file) { alert("กรุณาแนบสลิปก่อนครับ"); return; }
+
+            const btn = fileInput.nextElementSibling;
+            const oriText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> กำลังอัปโหลด...';
+            btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const res = await callAPI("uploadSlip", {
+                    base64Data: e.target.result,
+                    fileName: "SLIP_" + orderId + ".jpg",
+                    orderId: orderId
+                });
+                if (res.success) {
+                    alert("ส่งสลิปเรียบร้อย!");
+                    fetchOrders();
+                } else {
+                    alert("เกิดข้อผิดพลาด: " + res.message);
+                    btn.innerHTML = oriText;
+                    btn.disabled = false;
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
